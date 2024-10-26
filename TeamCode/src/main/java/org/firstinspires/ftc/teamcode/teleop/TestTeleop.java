@@ -10,6 +10,7 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
+import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -19,6 +20,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.components.Claw;
+import org.firstinspires.ftc.teamcode.components.Elevator;
 
 
 //@Disabled
@@ -29,16 +31,19 @@ public class TestTeleop extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(new Vector2d(0, 0), 0));
         Claw claw = new Claw(hardwareMap);
+        Elevator elevator = new Elevator();
+        elevator.init(this);
+        claw.init(this);
         Telemetry telemetry = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
+        elevator.updateTelemetry();
+        telemetry.update();
 //        drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         waitForStart();
         while (!isStopRequested()) {
             drive.updatePoseEstimate();
             Pose2d poseEstimate = drive.pose;
             drive.setDrivePowers(
-                    new PoseVelocity2d(Rotate(new Vector2d(-gamepad1.left_stick_y, -gamepad1.left_stick_x),0),
-
-                            -gamepad1.right_stick_x)
+                    new PoseVelocity2d(Rotate(new Vector2d(-gamepad1.left_stick_y, -gamepad1    .left_stick_x),-drive.pose.heading.toDouble()), -gamepad1.right_stick_x)
             );
             telemetry.addData("Joystick 1 leftX", gamepad1.left_stick_x);
 
@@ -51,12 +56,25 @@ public class TestTeleop extends LinearOpMode {
 
                 }
             if (gamepad2.dpad_up) {
-                claw.up();
+                claw.moveToPosition(0);
 
+            } else
+            if (gamepad2.dpad_down) {
+                claw.moveToPosition(340);
             }
-            if (gamepad2.dpad_down){
-                claw.down();
-
+                if (gamepad2.triangle) {
+                    //claw.scoreHighspecimen
+                   // Actions.runBlocking(elevator.moveToPosition(800););
+                    elevator.moveToPosition(693);
+                    sleep(500);
+                    claw.open();
+                } // else {
+                //claw.stop();
+            //}
+            if ((gamepad2.left_stick_y)>.3) {
+                elevator.moveToPosition(1600);
+            } else if ((gamepad2.left_stick_y)<-.3) {
+                elevator.moveToPosition(0);
             }
         /*    if (gamepad2.square) {
                 //Grabber.open
@@ -101,9 +119,11 @@ public class TestTeleop extends LinearOpMode {
 
             telemetry.addData("x", poseEstimate.position.x);
             telemetry.addData("y", poseEstimate.position.y);
-            telemetry.addData("heading", poseEstimate.heading.real);
+            telemetry.addData("heading", drive.pose.heading.toDouble());
             claw.updateTelemetry(telemetry);
             telemetry.update();
+            elevator.updateTelemetry();
+
         }
     }
 }
