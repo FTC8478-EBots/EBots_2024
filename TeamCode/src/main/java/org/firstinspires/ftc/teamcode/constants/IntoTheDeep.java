@@ -1,11 +1,11 @@
 package org.firstinspires.ftc.teamcode.constants;
 
 public class IntoTheDeep {
-    static class ElevatorHeight{
-    public int BOTTOM = 0;
-   public int LOWERBASKET = 1616;
-   public int TOPBASKET = 3608;
-   public int SpecimenClipedOnHighb = 693;
-   public int SpecimenReadyToBeCliped = 1250;
+    public static class ElevatorHeight{
+    public static int BOTTOM = 0;
+   public static int LOWERBASKET = 1616;
+   public static int TOPBASKET = 3608;
+   public static int SpecimenClipedOnHighb = 693;
+   public static int SpecimenReadyToBeCliped = 1250;
         }
     }

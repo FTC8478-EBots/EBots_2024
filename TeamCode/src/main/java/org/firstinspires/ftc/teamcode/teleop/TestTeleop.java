@@ -1,8 +1,5 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
-
-
-
 import static org.firstinspires.ftc.teamcode.constants.Common.Rotate;
 
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -19,6 +16,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 //import com.acmerobotics.roadrunner.ftc.
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
+import org.firstinspires.ftc.teamcode.autonomous.IntoTheDeepActions;
 import org.firstinspires.ftc.teamcode.components.Claw;
 import org.firstinspires.ftc.teamcode.components.Elevator;
 
@@ -27,11 +25,17 @@ import org.firstinspires.ftc.teamcode.components.Elevator;
 
 @TeleOp(group = "drive")
 public class TestTeleop extends LinearOpMode {
+
+    Claw claw;
+    Elevator elevator;
+    boolean gamepad2_prev_dpad_up = false;
+    boolean gamepad2_prev_dpad_down = false;
     @Override
     public void runOpMode() throws InterruptedException {
         MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(new Vector2d(0, 0), 0));
-        Claw claw = new Claw(hardwareMap);
-        Elevator elevator = new Elevator();
+        claw = new Claw(hardwareMap);
+        elevator = new Elevator();
+        IntoTheDeepActions intoTheDeepActions = new IntoTheDeepActions(drive,elevator,claw);
         elevator.init(this);
         claw.init(this);
         Telemetry telemetry = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
@@ -43,39 +47,69 @@ public class TestTeleop extends LinearOpMode {
             drive.updatePoseEstimate();
             Pose2d poseEstimate = drive.pose;
             drive.setDrivePowers(
-                    new PoseVelocity2d(Rotate(new Vector2d(-gamepad1.left_stick_y, -gamepad1    .left_stick_x),-drive.pose.heading.toDouble()), -gamepad1.right_stick_x)
+                    new PoseVelocity2d(Rotate(new Vector2d(-gamepad1.left_stick_y*getDriveSpeedScaling(), -gamepad1.left_stick_x*getDriveSpeedScaling()),-drive.pose.heading.toDouble()), -gamepad1.right_stick_x*getDriveSpeedScaling())
             );
             telemetry.addData("Joystick 1 leftX", gamepad1.left_stick_x);
 
             if (gamepad2.dpad_right) {
-                claw.open();
+                claw.down();
 
+              //  Actions.runBlocking(claw.openAction());
             }
             if (gamepad2.dpad_left){
-                claw.close();
+                claw.up();
 
                 }
-            if (gamepad2.dpad_up) {
-                claw.moveToPosition(0);
 
-            } else
-            if (gamepad2.dpad_down) {
-                claw.moveToPosition(340);
+            if (gamepad2.cross) {
+                 Actions.runBlocking(claw.openAction());
             }
-                if (gamepad2.triangle) {
-                    //claw.scoreHighspecimen
-                   // Actions.runBlocking(elevator.moveToPosition(800););
-                    elevator.moveToPosition(693);
-                    sleep(500);
-                    claw.open();
-                } // else {
+            if (gamepad2.circle){
+                claw.close();
+
+            }
+
+            if (gamepad2.dpad_up & !gamepad2_prev_dpad_up) {
+                elevator.increaseHeight();
+                gamepad2_prev_dpad_up = true;
+            }
+            if (!gamepad2.dpad_up) {
+                gamepad2_prev_dpad_up = false;
+
+            }
+
+            if (gamepad2.dpad_down & !gamepad2_prev_dpad_down) {
+                elevator.decreaseHeight();
+                gamepad2_prev_dpad_down = true;
+            }
+            if (!gamepad2.dpad_down) {
+                gamepad2_prev_dpad_down = false;
+
+            }
+
+
+        if (gamepad2.triangle) {
+
+
+            //claw.scoreHighspecimen
+            Actions.runBlocking(
+                    intoTheDeepActions.getHighSpecimenScoringAction()
+            );
+        }
+
+
+
+            // else {
                 //claw.stop();
             //}
-            if ((gamepad2.left_stick_y)>.3) {
+          /*  if ((gamepad2.left_stick_y)>.3) {
+                //variable = (Variable + 1)
                 elevator.moveToPosition(1600);
             } else if ((gamepad2.left_stick_y)<-.3) {
                 elevator.moveToPosition(0);
             }
+            */
+
         /*    if (gamepad2.square) {
                 //Grabber.open
                 telemetry.addData("opening pixel grabber, 2square", "");
@@ -126,7 +160,13 @@ public class TestTeleop extends LinearOpMode {
 
         }
     }
+    double getDriveSpeedScaling(){
+        return Math.min(
+                claw.driveSpeedScaling(), elevator.getDriveSpeedScaling()
+        );
+    }
 }
 
 //drive.setDrivePowers(new PoseVelocity2d(new Vector2d(gamepad1.left_stick_x, gamepad1.left_stick_y), gamepad1.right_stick_x == 0 ? 0 : Math.atan(gamepad1.right_stick_y/gamepad1.right_stick_x)));
 //the magical fix to driving?????????
+
