@@ -1,12 +1,17 @@
 package org.firstinspires.ftc.teamcode.components;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.SleepAction;
+import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 
 import android.drm.DrmStore;
@@ -14,17 +19,34 @@ import android.drm.DrmStore;
 import androidx.annotation.NonNull;
 
 import org.firstinspires.ftc.teamcode.constants.IntoTheDeep;
-
+@Config
 public class Elevator {
 
     private LinearOpMode opMode;
     HardwareMap hardwareMap;
-    private DcMotorEx elevatorMotor;
+    public DcMotorEx elevatorMotor;
     private     DigitalChannel zeroLimitSwitch;
-    private boolean isZeroed = false;
+    public boolean isZeroed = false;
     private int elevatorHeight = 0;
     private int MIN_HEIGHT = 0;
     private int MAX_HEIGHT = 2;
+    public static float power = 0.5f;
+    public static float velocity = 3000;
+    public static int T = 5;
+    public static float I = 0;
+    public static float D = 0;
+    public static float F = 0;
+
+    private Elevator(){};
+    private static Elevator theElevator;
+    public static Elevator getElevator(LinearOpMode opMode) {
+       // if (theElevator == null) {
+            theElevator = new Elevator();
+            theElevator.init(opMode);
+        //}
+        return theElevator;
+    }
+
     public void increaseHeight(){
         elevatorHeight ++;
         if (elevatorHeight > MAX_HEIGHT ) {
@@ -48,6 +70,9 @@ public class Elevator {
     }
 
     private void updatePosition() {
+    elevatorMotor.setPower(power);
+    elevatorMotor.setVelocity(velocity);
+    elevatorMotor.setTargetPositionTolerance(T);
         switch(elevatorHeight){
             case  0:
                 moveToPosition(IntoTheDeep.ElevatorHeight.BOTTOM);
@@ -61,6 +86,23 @@ public class Elevator {
         }
     }
 
+    public void zeroize() {
+        elevatorMotor.setPower(0);
+        elevatorMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        elevatorMotor.setPower(-.4);
+
+        Actions.runBlocking(new SleepAction(1));
+        elevatorMotor.setPower(0);
+        Actions.runBlocking(new SleepAction(1));
+
+        elevatorMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        elevatorMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        elevatorMotor.setPower(power);
+        elevatorMotor.setVelocity(velocity);
+        //elevatorMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION,new PIDFCoefficients(1,0,0,0));
+
+    }
     int getPosition() {
         return elevatorMotor.getCurrentPosition();
 
@@ -71,6 +113,7 @@ public class Elevator {
         telemetry.addData("elevatorHeight", elevatorHeight);
         telemetry.addData("Elevator Position", elevatorMotor.getCurrentPosition());
         telemetry.addData("Elevator Target", elevatorMotor.getTargetPosition());
+        telemetry.addData("Elevator Velocity", elevatorMotor.getVelocity());
       //  telemetry.addData("ZeroSensor", zeroLimitSwitch.getState());
     }
     public void init(LinearOpMode opMode) {
@@ -86,13 +129,11 @@ public class Elevator {
         elevatorMotor.setPower(0.2);
         //this.zeroLimitSwitch = this.hardwareMap.get(DigitalChannel.class, "elevatorZero");
         updateTelemetry();
+        zeroize();
         //elevatorMotor.setTargetPosition(0);
         //if elevatorHeight == 2 set position(3608)
         //if elevatorHeight == 1 set position(1616)
         //if elevatorHeight == o set position(0)
-    }
-    void zeroElevator() {
-        throw new RuntimeException("Unimplemented");
     }
     public void stop() {
         if (elevatorMotor.getMode() != DcMotor.RunMode.RUN_TO_POSITION) {

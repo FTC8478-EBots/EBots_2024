@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 import static org.firstinspires.ftc.teamcode.constants.Common.Rotate;
 
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -13,12 +14,15 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
 //import com.acmerobotics.roadrunner.ftc.
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.autonomous.IntoTheDeepActions;
 import org.firstinspires.ftc.teamcode.components.Claw;
 import org.firstinspires.ftc.teamcode.components.Elevator;
+import org.firstinspires.ftc.teamcode.components.Hang;
 
 
 //@Disabled
@@ -28,15 +32,18 @@ public class TestTeleop extends LinearOpMode {
 
     Claw claw;
     Elevator elevator;
+    Hang hangMotor;
     boolean gamepad2_prev_dpad_up = false;
     boolean gamepad2_prev_dpad_down = false;
+
     @Override
     public void runOpMode() throws InterruptedException {
         MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(new Vector2d(0, 0), 0));
-        claw = new Claw(hardwareMap);
-        elevator = new Elevator();
-        IntoTheDeepActions intoTheDeepActions = new IntoTheDeepActions(drive,elevator,claw);
-        elevator.init(this);
+        claw = Claw.getClaw(hardwareMap);
+        elevator = Elevator.getElevator(this);
+        hangMotor  = new Hang(hardwareMap);
+        IntoTheDeepActions intoTheDeepActions = new IntoTheDeepActions(drive, elevator, claw);
+        //elevator.init(this);
         claw.init(this);
         Telemetry telemetry = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
         elevator.updateTelemetry();
@@ -47,24 +54,52 @@ public class TestTeleop extends LinearOpMode {
             drive.updatePoseEstimate();
             Pose2d poseEstimate = drive.pose;
             drive.setDrivePowers(
-                    new PoseVelocity2d(Rotate(new Vector2d(-gamepad1.left_stick_y*getDriveSpeedScaling(), -gamepad1.left_stick_x*getDriveSpeedScaling()),-drive.pose.heading.toDouble()), -gamepad1.right_stick_x*getDriveSpeedScaling())
+                    new PoseVelocity2d(Rotate(new Vector2d(-gamepad1.left_stick_y * getDriveSpeedScaling(), -gamepad1.left_stick_x * getDriveSpeedScaling()), -drive.pose.heading.toDouble()), -gamepad1.right_stick_x * getDriveSpeedScaling())
             );
             telemetry.addData("Joystick 1 leftX", gamepad1.left_stick_x);
 
+            if (gamepad1.left_bumper && gamepad1.right_bumper) {
+                //reset: reinit heading and our elevator angles
+                drive.pose = new Pose2d(new Vector2d(0, 0), 0);
+            }
+            if (gamepad2.left_bumper && gamepad2.right_bumper) {
+                elevator.isZeroed = false;
+                elevator.elevatorMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+                elevator.elevatorMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                elevator.elevatorMotor.setTargetPosition(0);
+                elevator.elevatorMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                elevator.elevatorMotor.setPower(0.2);
+          /*      claw.clawServo.setDirection(Servo.Direction.FORWARD);
+                claw.armMotor.setDirection(DcMotorEx.Direction.FORWARD);
+                claw.armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                claw.armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                claw.armMotor.setTargetPosition(35);
+                claw.armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                claw.armMotor.setPower(0.3);
+                claw.armMotor.setMotorEnable();
+
+           */
+                claw.rezeroize();
+                //this.zeroLimitSwitch = this.hardwareMap.get(DigitalChannel.class, "elevatorZero");
+                elevator.zeroize();
+            }
             if (gamepad2.dpad_right) {
                 claw.down();
 
-              //  Actions.runBlocking(claw.openAction());
+                //  Actions.runBlocking(claw.openAction());
             }
-            if (gamepad2.dpad_left){
+            if (gamepad2.dpad_left) {
                 claw.up();
 
-                }
+            }
+            if (gamepad2.square) {
+                //Actions.runBlocking(intoTheDeepActions.grabClimber());
+            }
 
             if (gamepad2.cross) {
-                 Actions.runBlocking(claw.openAction());
+                Actions.runBlocking(claw.openAction());
             }
-            if (gamepad2.circle){
+            if (gamepad2.circle) {
                 claw.close();
 
             }
@@ -88,19 +123,18 @@ public class TestTeleop extends LinearOpMode {
             }
 
 
-        if (gamepad2.triangle) {
+            if (gamepad2.triangle) {
 
 
-            //claw.scoreHighspecimen
-            Actions.runBlocking(
-                    intoTheDeepActions.getHighSpecimenScoringAction()
-            );
-        }
-
-
+                //claw.scoreHighspecimen
+                Actions.runBlocking(
+                        intoTheDeepActions.getHighSpecimenScoringAction()
+                );
+            }
+             hangMotor.setPower (gamepad2.right_stick_y);
 
             // else {
-                //claw.stop();
+            //claw.stop();
             //}
           /*  if ((gamepad2.left_stick_y)>.3) {
                 //variable = (Variable + 1)
@@ -160,7 +194,8 @@ public class TestTeleop extends LinearOpMode {
 
         }
     }
-    double getDriveSpeedScaling(){
+
+    double getDriveSpeedScaling() {
         return Math.min(
                 claw.driveSpeedScaling(), elevator.getDriveSpeedScaling()
         );

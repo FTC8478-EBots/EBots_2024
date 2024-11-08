@@ -171,50 +171,125 @@ import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.components.Claw;
 import org.firstinspires.ftc.teamcode.components.Elevator;
+import org.firstinspires.ftc.teamcode.teleop.TestTeleop;
 
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
-@Disabled
-@Config
-@Autonomous
-public class Yippee extends LinearOpMode {
 
+@Config
+@Autonomous(preselectTeleOp = "TestTeleop")
+public class RoyalOak extends LinearOpMode {
+    int red = 1;
+    int left = 1;
+    int seconds = 0;
 
     @Override
     public void runOpMode() {
-        Pose2d initialPose = new Pose2d(-34, -61, Math.toRadians(90));
+        Pose2d initialPose;
+        if (red == 1) {
+            if (left == 1) {
+            initialPose = new Pose2d(-100, -61, Math.toRadians(90));
+            } else {
+                initialPose = new Pose2d(-15, -61, Math.toRadians(90));
+            }
+        } else {
+            if (left == 1) {
+                initialPose = new Pose2d(100, 61, Math.toRadians(-90));
+            } else {
+                initialPose = new Pose2d(15, 61, Math.toRadians(-90));
+            }
+        }
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
-        //Claw claw = new Claw(hardwareMap);
-        //Elevator lift = new Elevator();
+        Claw claw = Claw.getClaw(hardwareMap);
+        Elevator lift = Elevator.getElevator(this);
+        //Pose2d positionBeforeSample = new Pose2d(8, -34, Math.toRadians(90));
+
+        IntoTheDeepActions intoTheDeepActions = new IntoTheDeepActions(drive, lift, claw);
 
         // vision here that outputs position
+        TrajectoryActionBuilder tab;
+if (red == 1) {
+    tab = drive.actionBuilder(initialPose)
+            .strafeTo(new Vector2d(48, -60));
+} else {
+    tab = drive.actionBuilder(initialPose)
+            .strafeTo(new Vector2d(-48, 60));
+}
+        //TrajectoryActionBuilder tab1 = drive.actionBuilder(initialPose)
 
-        TrajectoryActionBuilder tab1 = drive.actionBuilder(initialPose)
+                /*.strafeTo(new Vector2d(8,-55))
+                .strafeTo(new Vector2d(8,-34))
+            .stopAndAdd(intoTheDeepActions.getHighSpecimenScoringAction())
+            .strafeTo(new Vector2d(8, -34));*/
+                //.strafeTo(new Vector2d())
 
-                .strafeTo(new Vector2d(-55,-55))
-                .turn(Math.toRadians(135))
-                .turn(Math.toRadians(-135))
-                .strafeTo(new Vector2d(-48,-36))
-                .strafeTo(new Vector2d(-55,-55))
-                .turn(Math.toRadians(135));
+
+
+                ;
+
+        //.strafeTo(new Vector2d(-34,-50))
+                //.strafeTo(new Vector2d(-64,-64))
+                //.turn(Math.toRadians(135))
+                //.turn(Math.toRadians(-135))
+                //.strafeTo(new Vector2d(-48,-36))
+                //.strafeTo(new Vector2d(-55,-55))
+                //.turn(Math.toRadians(135));
 
         // actions that need to happen on init; for instance, a claw tightening.
         //Actions.runBlocking(claw.closeClaw());
 
 
-        telemetry.addData(":( Your PC ran into a problem and needs to restart. We're just collecting some error info, and then we'll restart for you. If you'd like to know more, you can search online later for this error code, AUTON_FAILURE", "");
-        telemetry.update();
+        //telemetry.addData(":( Your PC ran into a problem and needs to restart. We're just collecting some0 error info, and then we'll restart for you. If you'd like to know more, you can search online later for this error code, AUTON_FAILURE", "");
+
+        while (!isStarted() && !isStopRequested()) {
+            boolean upPressed = false;
+            boolean downPressed = false;
+            if (gamepad1.dpad_up && !upPressed) {
+                upPressed = true;
+            } else if (!gamepad1.dpad_up && upPressed) {
+                upPressed = false;
+                seconds = Math.max(15, seconds+1);
+            }
+            if (gamepad1.dpad_down && !downPressed) {
+                downPressed = true;
+            } else if (!gamepad1.dpad_down && downPressed) {
+                downPressed = false;
+                seconds = Math.min(0, seconds-1);
+            }
+
+            if (gamepad1.a) {
+                red = 1;
+            }
+            if (gamepad1.b) {
+                red = 0;
+            }
+            if (gamepad1.x) {
+                left = 1;
+            }
+            if (gamepad1.y) {
+                left = 0;
+            }
+
+            telemetry.addData("a/cross is red, b/circle is blue, x/square is left, y/triangle is right, change # of seconds delay is dpad up/down", "");
+            telemetry.addData("red", red);
+            telemetry.addData("left", left);
+            telemetry.addData("currentSelection", red == 1 ? "red" : "blue");
+            telemetry.addData("" , left == 1 ? "left" : "right");
+            telemetry.addData("Seconds of delay", seconds);
+
+            telemetry.update();
+        }
         waitForStart();
 
         if (isStopRequested()) return;
-        Action trajectoryActionChosen = tab1.build();
+        Action trajectoryActionChosen = tab.build();
         Actions.runBlocking(trajectoryActionChosen);
 
         /*Actions.runBlocking(
