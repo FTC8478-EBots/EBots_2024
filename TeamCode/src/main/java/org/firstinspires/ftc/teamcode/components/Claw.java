@@ -150,7 +150,37 @@ public class Claw {
         };
     }
 
+    public Action downAction() {
+        return new Action() {
+            private boolean initialized = false;
 
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                if (!initialized) {
+                    down();
+                    initialized = true;
+                }
+                telemetryPacket.addLine("lowerClaw");
+                return false;
+            }
+        };
+    }
+
+    public Action upAction() {
+        return new Action() {
+            private boolean initialized = false;
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                if (!initialized) {
+                    up();
+                    initialized = true;
+                }
+                telemetryPacket.addLine("raiseClaw");
+                return false;
+            }
+        };
+    }
     public Action moveToPositionAction(int position) {
         return new Action() {
             int targetPosition = position;
