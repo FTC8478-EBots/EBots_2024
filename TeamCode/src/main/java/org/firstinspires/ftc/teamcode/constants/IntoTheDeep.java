@@ -8,7 +8,7 @@ public class IntoTheDeep {
     public static int BOTTOM = 5;
    public static int LOWERBASKET = 1516;
    public static int TOPBASKET = 3608;
-   public static int SpecimenClipedOnHighb = 674;
+   public static int SpecimenClipedOnHighb = 654;   //674 is right
    public static int SpecimenReadyToBeCliped = 1250;
    public static int GrabBracket = 1150;
         }

@@ -27,7 +27,12 @@ public class RoyalOak extends LinearOpMode {
     public static double distForward = 32.75;
     public static double distRight = 24;
     public static double distPark = 48;
-    public static double distForwardforSamples = 55;
+    public static double distForwardforSamples = 58;
+    public static double distForwardforYellowSamples1 = 30;
+    public static double distForwardforYellowSamples2 = 30;
+    public static double distLeftforYellowSamples1 = 48;
+    public static double distLeftforYellowSamples2 = 48;
+
     /*public Pose2d getInitialPose(int color, int side) {
         if (color == 1) {
             if (side == 1) {
@@ -73,14 +78,20 @@ public class RoyalOak extends LinearOpMode {
                 .stopAndAdd(new SequentialAction(claw.openAction()))
                 .strafeTo(new Vector2d(0,0))
                 .strafeTo(new Vector2d(-36,10))
+                .stopAndAdd(new SleepAction( 5))
+
                 .stopAndAdd(new SequentialAction(claw.downAction()))
                 //.stopAndAdd(new SequentialAction(lift.moveToPositionAction()))
                 .stopAndAdd(new SequentialAction(claw.closeAction()))
                 .stopAndAdd(new SequentialAction(claw.upAction()))
                 .strafeToLinearHeading(new Vector2d(-48,12),Math.toRadians(135))//Basket position
+                //.stopAndAdd(new SequentialAction(IntoTheDeep.ElevatorHeight.TOPBASKET))
+                //.stopAndAdd(new SequentialAction(claw.openAction()))
+                //.stopAndAdd(new SleepAction(1))
                 ;
                 //isaac is a software star and will always be :D
                 // Jake is a software star and always will be because he is software
+        //Coach Joe is a software star.
         ;
         TrajectoryActionBuilder tabRight= drive.actionBuilder(initialPose)
                 .stopAndAdd(new SequentialAction(claw.closeAction()))
@@ -93,11 +104,11 @@ public class RoyalOak extends LinearOpMode {
                 .strafeTo(new Vector2d(0,0))
                 .strafeTo(new Vector2d(distRight,0))
                 .strafeTo(new Vector2d(distRight,distForwardforSamples))
-                .strafeTo(new Vector2d(34,distForwardforSamples))
-                .strafeTo(new Vector2d(34, 0))
-                .strafeTo(new Vector2d(34,distForwardforSamples))
-                .strafeTo(new Vector2d(43,distForwardforSamples))
-                .strafeTo(new Vector2d(43,0))
+                .strafeTo(new Vector2d(32,distForwardforSamples))
+                .strafeTo(new Vector2d(32, 0))
+                .strafeTo(new Vector2d(32,distForwardforSamples))
+                .strafeTo(new Vector2d(41,distForwardforSamples))
+                .strafeTo(new Vector2d(41,0))
                 //.strafeTo(new Vector2d(45,50))
                 //.strafeTo(new Vector2d(54,50))
                 .strafeTo(new Vector2d(distPark,0));//go to parking space
