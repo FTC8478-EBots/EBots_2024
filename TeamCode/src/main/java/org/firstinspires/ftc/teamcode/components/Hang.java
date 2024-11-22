@@ -1,11 +1,16 @@
 package org.firstinspires.ftc.teamcode.components;
 
+import androidx.annotation.NonNull;
+
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 public class Hang {
+    public final double HANG_WEAK_POWER = 0.3;
     public DcMotorEx hangMotor;
     public Hang(HardwareMap hardwareMap) {
         hangMotor = hardwareMap.get(DcMotorEx.class, "hangMotor");
@@ -19,5 +24,21 @@ public class Hang {
         hangMotor.setMotorEnable();
         //zeroize();
     }
-    public void setPower(float power){hangMotor.setPower(power);}
+    public void setPower(double power){hangMotor.setPower(power);}
+    public Action hangPower(double power) {
+        return new Action() {
+            private boolean initialized = false;
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                if (!initialized) {
+                    setPower(power);
+                    initialized = true;
+                }
+                telemetryPacket.addLine("openingClaw");
+                return false;
+            }
+        };
+    }
+
 }

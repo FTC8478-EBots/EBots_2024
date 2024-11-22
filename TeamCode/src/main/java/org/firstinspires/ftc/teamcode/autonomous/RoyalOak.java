@@ -14,6 +14,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.components.Claw;
 import org.firstinspires.ftc.teamcode.components.Elevator;
+import org.firstinspires.ftc.teamcode.components.Hang;
 import org.firstinspires.ftc.teamcode.constants.IntoTheDeep;
 
 @Config
@@ -49,6 +50,7 @@ public class RoyalOak extends LinearOpMode {
 
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
         Claw claw = Claw.getClaw(hardwareMap);
+        Hang hang = new Hang(hardwareMap);
         claw.init(this);
         claw.close();
         Elevator lift = Elevator.getElevator(this);
@@ -59,12 +61,12 @@ public class RoyalOak extends LinearOpMode {
 //you are in a dark room, what will you do?
         //i turn the lights on :)
         //you go blind... forever :(
-        IntoTheDeepActions intoTheDeepActions = new IntoTheDeepActions(drive, lift, claw);
+        IntoTheDeepActions intoTheDeepActions = new IntoTheDeepActions(drive, lift, claw, hang);
         // vision here that outputs position
         TrajectoryActionBuilder tabLeft = drive.actionBuilder(initialPose)
                 .stopAndAdd(new SequentialAction(claw.closeAction()))
                 .stopAndAdd(new SequentialAction(lift.moveToPositionAction(IntoTheDeep.ElevatorHeight.SpecimenReadyToBeCliped)))
-                .strafeTo(new Vector2d(distRight, distForward))
+                .strafeTo(new Vector2d(0, distForward))
                 .stopAndAdd(new SleepAction(1))
                 .stopAndAdd(new SequentialAction(lift.moveToPositionAction(IntoTheDeep.ElevatorHeight.SpecimenClipedOnHighb)))
                 .stopAndAdd(new SleepAction( 1))
@@ -91,14 +93,11 @@ public class RoyalOak extends LinearOpMode {
                 .strafeTo(new Vector2d(0,0))
                 .strafeTo(new Vector2d(distRight,0))
                 .strafeTo(new Vector2d(distRight,distForwardforSamples))
-                .strafeTo(new Vector2d(36,distForwardforSamples))
-                .strafeTo(new Vector2d(36, 0))
-                .strafeTo(new Vector2d(36,distForwardforSamples))
-                .strafeTo(new Vector2d(45,distForwardforSamples))
-                .strafeTo(new Vector2d(45,0))
-                //Coach Joe is a software star
-                //Vincent is a SOFTWARE STAR!!!!!!!!!!!!!!!!!!
-                //vincent is good
+                .strafeTo(new Vector2d(34,distForwardforSamples))
+                .strafeTo(new Vector2d(34, 0))
+                .strafeTo(new Vector2d(34,distForwardforSamples))
+                .strafeTo(new Vector2d(43,distForwardforSamples))
+                .strafeTo(new Vector2d(43,0))
                 //.strafeTo(new Vector2d(45,50))
                 //.strafeTo(new Vector2d(54,50))
                 .strafeTo(new Vector2d(distPark,0));//go to parking space
@@ -151,6 +150,14 @@ public class RoyalOak extends LinearOpMode {
                 currentlyLeft = 1;
 
         }
+
+        telemetry.addLine("Ready to run Auton ");
+        if (currentlyLeft == 1)
+            telemetry.addLine(" left.");
+        else
+            telemetry.addLine(" right.");
+        telemetry.update();
+
         return currentlyLeft;
     }
 }

@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.linearOpMode;
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 import static org.firstinspires.ftc.teamcode.constants.Common.Rotate;
 
@@ -42,7 +43,7 @@ public class TestTeleop extends LinearOpMode {
         claw = Claw.getClaw(hardwareMap);
         elevator = Elevator.getElevator(this);
         hangMotor  = new Hang(hardwareMap);
-        IntoTheDeepActions intoTheDeepActions = new IntoTheDeepActions(drive, elevator, claw);
+        IntoTheDeepActions intoTheDeepActions = new IntoTheDeepActions(drive, elevator, claw, hangMotor);
         //elevator.init(this);
         claw.init(this);
         Telemetry telemetry = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
@@ -69,17 +70,8 @@ public class TestTeleop extends LinearOpMode {
                 elevator.elevatorMotor.setTargetPosition(0);
                 elevator.elevatorMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 elevator.elevatorMotor.setPower(0.2);
-          /*      claw.clawServo.setDirection(Servo.Direction.FORWARD);
-                claw.armMotor.setDirection(DcMotorEx.Direction.FORWARD);
-                claw.armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                claw.armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                claw.armMotor.setTargetPosition(35);
-                claw.armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                claw.armMotor.setPower(0.3);
-                claw.armMotor.setMotorEnable();
 
-           */
-                claw.rezeroize();
+                claw.zeroize(2);
                 //this.zeroLimitSwitch = this.hardwareMap.get(DigitalChannel.class, "elevatorZero");
                 elevator.zeroize();
             }
@@ -93,7 +85,8 @@ public class TestTeleop extends LinearOpMode {
 
             }
             if (gamepad2.square) {
-                //Actions.runBlocking(intoTheDeepActions.grabClimber());
+
+                Actions.runBlocking(intoTheDeepActions.grabClimber());
             }
 
             if (gamepad2.cross) {
@@ -131,7 +124,6 @@ public class TestTeleop extends LinearOpMode {
                         intoTheDeepActions.getHighSpecimenScoringAction()
                 );
             }
-             hangMotor.setPower (gamepad2.right_stick_y);
 
             // else {
             //claw.stop();
@@ -184,7 +176,7 @@ public class TestTeleop extends LinearOpMode {
             );
 
             */
-
+            telemetry.addData("Game TIME: ",this.time);
             telemetry.addData("x", poseEstimate.position.x);
             telemetry.addData("y", poseEstimate.position.y);
             telemetry.addData("heading", drive.pose.heading.toDouble());
