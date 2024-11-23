@@ -24,6 +24,7 @@ import org.firstinspires.ftc.teamcode.autonomous.IntoTheDeepActions;
 import org.firstinspires.ftc.teamcode.components.Claw;
 import org.firstinspires.ftc.teamcode.components.Elevator;
 import org.firstinspires.ftc.teamcode.components.Hang;
+import org.firstinspires.ftc.teamcode.constants.IntoTheDeep;
 
 
 //@Disabled
@@ -99,7 +100,11 @@ public class TestTeleop extends LinearOpMode {
             }
             if (gamepad1.cross) {
                 if (this.time-startTime>100) {
+                    Actions.runBlocking(elevator.moveToPositionAction(IntoTheDeep.ElevatorHeight.LOW_BAR));
                     hangMotor.retract();
+                    Actions.runBlocking(claw.moveToUpAction());
+                    elevator.moveToPosition(0);
+
                 }
                 else
                     telemetry.addLine("ERROR NOT ENDGAME");

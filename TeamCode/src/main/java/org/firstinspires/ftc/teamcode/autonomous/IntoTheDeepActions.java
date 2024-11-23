@@ -22,9 +22,9 @@ public class IntoTheDeepActions {
     Claw claw;
     Hang hangMotor;
 
-    public static int ARM_READY_TO_HANG_POSITION = 700;
+    public static int ARM_READY_TO_HANG_POSITION = 600;
     public static double ARM_READY_TO_HANG_SPEED = 0.1;
-    public static double HANG_MOTOR_RELEASE_SPEED = 0.1;
+    public static double HANG_MOTOR_RELEASE_SPEED = -.325;
 
     public IntoTheDeepActions(MecanumDrive mecanumDrive, Elevator elevator, Claw claw, Hang hang) {
         this.elevator = elevator;

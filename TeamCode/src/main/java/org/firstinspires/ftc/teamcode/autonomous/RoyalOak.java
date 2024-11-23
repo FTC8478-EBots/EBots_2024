@@ -28,9 +28,9 @@ public class RoyalOak extends LinearOpMode {
     public static double distRight = 24;
     public static double distPark = 48;
     public static double distForwardforSamples = 58;
-    public static double distForwardforYellowSamples1 = 30;
-    public static double distForwardforYellowSamples2 = 30;
-    public static double distLeftforYellowSamples1 = 48;
+    public static double distForwardforYellowSamples1 = 24;
+    public static double distForwardforYellowSamples2 = 24;
+    public static double distLeftforYellowSamples1 = 37;
     public static double distLeftforYellowSamples2 = 48;
     public static double BASKET_X = -48;
     public static double BASKET_Y = 12;
@@ -85,7 +85,7 @@ public class RoyalOak extends LinearOpMode {
 
                 //Grab Block 1
                 .strafeToLinearHeading(new Vector2d(-distLeftforYellowSamples1,distForwardforYellowSamples1),initialPose.heading) //Block 1 (Right most)
-                .stopAndAdd(new SequentialAction(lift.moveToPositionAction(IntoTheDeep.ElevatorHeight.BOTTOM)))
+                .stopAndAdd(new SequentialAction(lift.moveToPositionAction(IntoTheDeep.ElevatorHeight.BOTTOM_PLUS)))
                 .stopAndAdd(claw.moveToDownAction())
                 .stopAndAdd(new SleepAction( .5))
                 .stopAndAdd(new SequentialAction(claw.closeAction()))
@@ -103,7 +103,7 @@ public class RoyalOak extends LinearOpMode {
 
                 //Grab Block 2
                 .strafeToLinearHeading(new Vector2d(-distLeftforYellowSamples2,distForwardforYellowSamples2),initialPose.heading) //Block 1 (Right most)
-                .stopAndAdd(new SequentialAction(lift.moveToPositionAction(IntoTheDeep.ElevatorHeight.BOTTOM)))
+                .stopAndAdd(new SequentialAction(lift.moveToPositionAction(IntoTheDeep.ElevatorHeight.BOTTOM_PLUS)))
                 .stopAndAdd(claw.moveToDownAction())
                 .stopAndAdd(new SleepAction( .5))
                 .stopAndAdd(new SequentialAction(claw.closeAction()))
@@ -118,6 +118,7 @@ public class RoyalOak extends LinearOpMode {
                 .stopAndAdd(new SleepAction( .5))
 
                 .strafeToLinearHeading(new Vector2d(LEFT_PARK_X,LEFT_PARK_Y),initialPose.heading)//Basket position
+                .stopAndAdd(new SequentialAction(lift.moveToPositionAction(IntoTheDeep.ElevatorHeight.BOTTOM_PLUS)))
 
 
 

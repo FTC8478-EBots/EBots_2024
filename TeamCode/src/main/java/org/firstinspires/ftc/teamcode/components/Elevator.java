@@ -172,6 +172,7 @@ public class Elevator {
 
     public Action moveToPositionAction (int position){return new Action() {
         int targetPosition = position;
+        int cycles = 0;
         private boolean initialized = false;
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
@@ -179,8 +180,10 @@ public class Elevator {
                 elevatorMotor.setTargetPosition(targetPosition);
                 initialized = true;
             }
+            cycles++;
             telemetryPacket.put("elevatorTarget", targetPosition);
-            return !(Math.abs(elevatorMotor.getCurrentPosition()-targetPosition)< 2 * elevatorMotor.getTargetPositionTolerance());
+            telemetryPacket.put("elevatorCycles",cycles);
+            return !((Math.abs(elevatorMotor.getCurrentPosition()-targetPosition)< 4 * elevatorMotor.getTargetPositionTolerance()));
 
         }
     };
