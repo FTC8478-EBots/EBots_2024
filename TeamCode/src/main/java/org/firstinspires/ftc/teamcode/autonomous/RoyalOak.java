@@ -80,7 +80,8 @@ public class RoyalOak extends LinearOpMode {
                 .stopAndAdd(new SequentialAction(lift.moveToPositionAction(IntoTheDeep.ElevatorHeight.SpecimenClipedOnHighb)))
                 .stopAndAdd(new SleepAction( 1))
                 .stopAndAdd(new SequentialAction(claw.openAction()))
-                .strafeTo(new Vector2d(0,0))
+                .stopAndAdd(new SleepAction( .25))
+                .strafeTo(new Vector2d(0,distForwardforYellowSamples1))
 
                 //Grab Block 1
                 .strafeToLinearHeading(new Vector2d(-distLeftforYellowSamples1,distForwardforYellowSamples1),initialPose.heading) //Block 1 (Right most)

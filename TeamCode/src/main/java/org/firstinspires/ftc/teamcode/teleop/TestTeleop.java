@@ -36,6 +36,7 @@ public class TestTeleop extends LinearOpMode {
     Hang hangMotor;
     boolean gamepad2_prev_dpad_up = false;
     boolean gamepad2_prev_dpad_down = false;
+    boolean gamepad1_prev_cross = false;
     double startTime;
 
     @Override
@@ -88,13 +89,21 @@ public class TestTeleop extends LinearOpMode {
                 claw.up();
 
             }
-            if (gamepad2.square) {
+            if (gamepad1.square) {
                 if (this.time-startTime>100) {
                     drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0, 0), 0));
                     Actions.runBlocking(intoTheDeepActions.grabClimber());
                 }
                 else
                     telemetry.addLine("ERROR NOT ENDGAME");
+            }
+            if (gamepad1.cross) {
+                if (this.time-startTime>100) {
+                    hangMotor.retract();
+                }
+                else
+                    telemetry.addLine("ERROR NOT ENDGAME");
+
             }
 
             if (gamepad2.cross) {

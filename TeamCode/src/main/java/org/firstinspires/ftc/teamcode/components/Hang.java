@@ -24,6 +24,12 @@ public class Hang {
         hangMotor.setMotorEnable();
         //zeroize();
     }
+    public void retract() {
+        hangMotor.setTargetPosition(0);
+        hangMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        hangMotor.setPower(1.0);
+
+    }
     public void setPower(double power){hangMotor.setPower(power);}
     public Action hangPower(double power) {
         return new Action() {
@@ -32,10 +38,11 @@ public class Hang {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 if (!initialized) {
+                    hangMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                     setPower(power);
                     initialized = true;
                 }
-                telemetryPacket.addLine("openingClaw");
+                telemetryPacket.addLine("hangPower");
                 return false;
             }
         };
