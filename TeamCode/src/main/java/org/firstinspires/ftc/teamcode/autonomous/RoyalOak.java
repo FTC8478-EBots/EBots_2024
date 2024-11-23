@@ -32,6 +32,10 @@ public class RoyalOak extends LinearOpMode {
     public static double distForwardforYellowSamples2 = 30;
     public static double distLeftforYellowSamples1 = 48;
     public static double distLeftforYellowSamples2 = 48;
+    public static double BASKET_X = -48;
+    public static double BASKET_Y = 12;
+    public static double LEFT_PARK_X = -24;
+    public static double LEFT_PARK_Y = 24;
 
     /*public Pose2d getInitialPose(int color, int side) {
         if (color == 1) {
@@ -77,17 +81,46 @@ public class RoyalOak extends LinearOpMode {
                 .stopAndAdd(new SleepAction( 1))
                 .stopAndAdd(new SequentialAction(claw.openAction()))
                 .strafeTo(new Vector2d(0,0))
-                .strafeTo(new Vector2d(-36,10))
-                .stopAndAdd(new SleepAction( 5))
 
-                .stopAndAdd(new SequentialAction(claw.downAction()))
-                //.stopAndAdd(new SequentialAction(lift.moveToPositionAction()))
+                //Grab Block 1
+                .strafeToLinearHeading(new Vector2d(-distLeftforYellowSamples1,distForwardforYellowSamples1),initialPose.heading) //Block 1 (Right most)
+                .stopAndAdd(new SequentialAction(lift.moveToPositionAction(IntoTheDeep.ElevatorHeight.BOTTOM)))
+                .stopAndAdd(claw.moveToDownAction())
+                .stopAndAdd(new SleepAction( .5))
                 .stopAndAdd(new SequentialAction(claw.closeAction()))
-                .stopAndAdd(new SequentialAction(claw.upAction()))
-                .strafeToLinearHeading(new Vector2d(-48,12),Math.toRadians(135))//Basket position
-                //.stopAndAdd(new SequentialAction(IntoTheDeep.ElevatorHeight.TOPBASKET))
-                //.stopAndAdd(new SequentialAction(claw.openAction()))
-                //.stopAndAdd(new SleepAction(1))
+                .stopAndAdd(new SleepAction( .5))
+                .stopAndAdd(claw.moveToUpAction())
+
+                //Deposit Block 1
+                .stopAndAdd(new SequentialAction(lift.moveToPositionAction(IntoTheDeep.ElevatorHeight.TOPBASKET)))
+                .strafeToLinearHeading(new Vector2d(BASKET_X,BASKET_Y),Math.toRadians(225))//Basket position
+                .stopAndAdd(new SleepAction( .5))
+                .stopAndAdd(new SequentialAction(claw.openAction()))
+                .stopAndAdd(new SleepAction( .5))
+
+
+
+                //Grab Block 2
+                .strafeToLinearHeading(new Vector2d(-distLeftforYellowSamples2,distForwardforYellowSamples2),initialPose.heading) //Block 1 (Right most)
+                .stopAndAdd(new SequentialAction(lift.moveToPositionAction(IntoTheDeep.ElevatorHeight.BOTTOM)))
+                .stopAndAdd(claw.moveToDownAction())
+                .stopAndAdd(new SleepAction( .5))
+                .stopAndAdd(new SequentialAction(claw.closeAction()))
+                .stopAndAdd(new SleepAction( .5))
+                .stopAndAdd(claw.moveToUpAction())
+
+                //Deposit Block 2
+                .stopAndAdd(new SequentialAction(lift.moveToPositionAction(IntoTheDeep.ElevatorHeight.TOPBASKET)))
+                .strafeToLinearHeading(new Vector2d(BASKET_X,BASKET_Y),Math.toRadians(225))//Basket position
+                .stopAndAdd(new SleepAction( .5))
+                .stopAndAdd(new SequentialAction(claw.openAction()))
+                .stopAndAdd(new SleepAction( .5))
+
+                .strafeToLinearHeading(new Vector2d(LEFT_PARK_X,LEFT_PARK_Y),initialPose.heading)//Basket position
+
+
+
+
                 ;
                 //isaac is a software star and will always be :D
                 // Jake is a software star and always will be because he is software

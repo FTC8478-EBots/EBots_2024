@@ -36,8 +36,10 @@ public class Elevator {
     public static float D = 0;
     public static float F = 0;
 
+    boolean busy = false;
     private Elevator(){};
     private static Elevator theElevator;
+    DigitalChannel busyLED;
     public static Elevator getElevator(LinearOpMode opMode) {
        // if (theElevator == null) {
             theElevator = new Elevator();
@@ -86,20 +88,33 @@ public class Elevator {
     }
 
     public void zeroize() {
-        elevatorMotor.setPower(0);
-        elevatorMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        elevatorMotor.setPower(-.4);
+        if (busy) return;
+        busy = true;
+        busyLED.setState(false);
 
-        Actions.runBlocking(new SleepAction(1));
-        elevatorMotor.setPower(0);
-        Actions.runBlocking(new SleepAction(1));
+        new Thread(
+                new Runnable() {
+                    @Override
+                    public void run() {
 
-        elevatorMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                        elevatorMotor.setPower(0);
+                        elevatorMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                        elevatorMotor.setPower(-.4);
 
-        elevatorMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        elevatorMotor.setPower(power);
-        elevatorMotor.setVelocity(velocity);
-        //elevatorMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION,new PIDFCoefficients(1,0,0,0));
+                        Actions.runBlocking(new SleepAction(1));
+                        elevatorMotor.setPower(0);
+                        Actions.runBlocking(new SleepAction(.2));
+
+                        elevatorMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+                        elevatorMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                        elevatorMotor.setPower(power);
+                        elevatorMotor.setVelocity(velocity);
+                        busy = false;
+                        //elevatorMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION,new PIDFCoefficients(1,0,0,0));
+                    }
+                }
+                ).start();
 
     }
     int getPosition() {
@@ -121,6 +136,10 @@ public class Elevator {
         this.hardwareMap = this.opMode.hardwareMap;
         isZeroed = false;
         this.elevatorMotor = this.hardwareMap.get(DcMotorEx.class, "elevatorMotor");
+        busyLED = hardwareMap.get(DigitalChannel.class, "busyLED");
+        busyLED.setMode(DigitalChannel.Mode.OUTPUT);
+        busyLED.setState(true);
+
         elevatorMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         elevatorMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         elevatorMotor.setTargetPosition(0);

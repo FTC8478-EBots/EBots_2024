@@ -36,6 +36,7 @@ public class TestTeleop extends LinearOpMode {
     Hang hangMotor;
     boolean gamepad2_prev_dpad_up = false;
     boolean gamepad2_prev_dpad_down = false;
+    double startTime;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -51,7 +52,9 @@ public class TestTeleop extends LinearOpMode {
         telemetry.update();
 //        drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         waitForStart();
+        startTime = this.time;
         while (!isStopRequested()) {
+            telemetry.addData("GAME TIME: ",this.time-startTime);
             drive.updatePoseEstimate();
             Pose2d poseEstimate = drive.pose;
             drive.setDrivePowers(
@@ -60,10 +63,11 @@ public class TestTeleop extends LinearOpMode {
             telemetry.addData("Joystick 1 leftX", gamepad1.left_stick_x);
 
             if (gamepad1.left_bumper && gamepad1.right_bumper) {
-                //reset: reinit heading and our elevator angles
+                //reset: reinit heading and our elevator angle
                 drive.pose = new Pose2d(new Vector2d(0, 0), 0);
             }
             if (gamepad2.left_bumper && gamepad2.right_bumper) {
+                drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0, 0), 0));
                 elevator.isZeroed = false;
                 elevator.elevatorMotor.setDirection(DcMotorSimple.Direction.REVERSE);
                 elevator.elevatorMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -85,8 +89,12 @@ public class TestTeleop extends LinearOpMode {
 
             }
             if (gamepad2.square) {
-
-                Actions.runBlocking(intoTheDeepActions.grabClimber());
+                if (this.time-startTime>100) {
+                    drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0, 0), 0));
+                    Actions.runBlocking(intoTheDeepActions.grabClimber());
+                }
+                else
+                    telemetry.addLine("ERROR NOT ENDGAME");
             }
 
             if (gamepad2.cross) {
@@ -176,7 +184,6 @@ public class TestTeleop extends LinearOpMode {
             );
 
             */
-            telemetry.addData("Game TIME: ",this.time);
             telemetry.addData("x", poseEstimate.position.x);
             telemetry.addData("y", poseEstimate.position.y);
             telemetry.addData("heading", drive.pose.heading.toDouble());

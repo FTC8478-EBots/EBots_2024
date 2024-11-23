@@ -9,7 +9,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.LED;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -18,6 +20,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 
 import static java.lang.Thread.sleep;
+
+import android.os.Handler;
+import android.os.Looper;
 
 import androidx.annotation.NonNull;
 @Config
@@ -28,12 +33,17 @@ public class Claw {
     public static int ARM_HANG_PREPARE_POSITION = 2225;
     public final double ARM_WEAK_POWER = 0.1;
     public final double ARM_NORMAL_POWER = 1;
-int cycleCount=0;    //Telemetry telemetry = new Telemetry();
+    int cycleCount = 0;    //Telemetry telemetry = new Telemetry();
+    boolean busy = false;
 
-
-    public Servo clawServo;
+    private Servo clawServo;
     private DcMotorEx armMotor;
+    private DigitalChannel busyLED;
     private static Claw theClaw;
+    double maxArmCurrent = 0;
+
+    Handler runner;
+
     public static Claw getClaw(HardwareMap hardwareMap) {
         //if (theClaw == null) theClaw = new Claw(hardwareMap);
         //return theClaw;
@@ -41,56 +51,63 @@ int cycleCount=0;    //Telemetry telemetry = new Telemetry();
     }
 
     private Claw(HardwareMap hardwareMap) {
+        Looper.prepare();
+        runner = new Handler();
+
+       // runner = new Executors.newSingleThreadExecutor();
         clawServo = hardwareMap.get(Servo.class, "clawServo");
         clawServo.setDirection(Servo.Direction.FORWARD);
         armMotor = hardwareMap.get(DcMotorEx.class, "armMotor");
         armMotor.setDirection(DcMotorEx.Direction.REVERSE);
-       /* armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        armMotor.setTargetPosition(ARM_UP_POSITION);
-        armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        armMotor.setPower(0.3);
-        armMotor.setMotorEnable();
-        */
-//if arm.lower:
-        //
+        busyLED = hardwareMap.get(DigitalChannel.class, "busyLED");
+        busyLED.setMode(DigitalChannel.Mode.OUTPUT);
+        busyLED.setState(true);
+
+        //busyLED.on();
         zeroize(2);
     }
 
     public void zeroize(double movingTime) {
-       // armMotor.setMode(DcMotor.RunMode.)
-        armMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        armMotor.setPower(.1);
+        if (busy) return;
+        busy = true;
+        busyLED.setState(false);
 
-        Actions.runBlocking(new SleepAction(movingTime/4.0));
-        armMotor.setPower(-.1);
-        Actions.runBlocking(new SleepAction(movingTime));
-        armMotor.setPower(0);
-        Actions.runBlocking(new SleepAction(.2));
-        armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        armMotor.setTargetPosition(ARM_UP_POSITION);
-        armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        armMotor.setPower(ARM_NORMAL_POWER);
-        armMotor.setCurrentAlert(5, CurrentUnit.AMPS);
+        new Thread(
+        new Runnable() {
+            @Override
+            public void run() {
+                armMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                armMotor.setPower(.1);
+                Actions.runBlocking(new SleepAction(movingTime / 4.0));
+                armMotor.setPower(-.1);
+                Actions.runBlocking(new SleepAction(movingTime));
+                armMotor.setPower(0);
+                Actions.runBlocking(new SleepAction(.2));
+                armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                armMotor.setTargetPosition(ARM_UP_POSITION);
+                armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                armMotor.setPower(ARM_NORMAL_POWER);
+                armMotor.setCurrentAlert(5, CurrentUnit.AMPS);
+                busyLED.setState(true);
+                busy = false;
+            }
+        }).start();
     }
 
 
 
-
-    double maxArmCurrent = 0;
     public void updateTelemetry(Telemetry t) {
-        maxArmCurrent = Math.max(maxArmCurrent,armMotor.getCurrent(CurrentUnit.AMPS));
+        maxArmCurrent = Math.max(maxArmCurrent, armMotor.getCurrent(CurrentUnit.AMPS));
 
         t.addData("arm Target", armMotor.getTargetPosition());
         t.addData("arm position", armMotor.getCurrentPosition());
         t.addData("arm current", armMotor.getCurrent(CurrentUnit.AMPS));
-        t.addData("Max Arm Current",maxArmCurrent);
+        t.addData("Max Arm Current", maxArmCurrent);
     }
 
     void open() {
         clawServo.setPosition(.1);
     }
-
 
 
     public void init(LinearOpMode opMode) {
@@ -99,11 +116,6 @@ int cycleCount=0;    //Telemetry telemetry = new Telemetry();
         // updateTelemetry();
         //elevatorMotor.setTargetPosition(0);
     }
-
-    private void moveToPosition(int position) {
-        armMotor.setTargetPosition(position);
-    }
-
 
     public void close() {
         clawServo.setPosition(0.36);
@@ -141,7 +153,7 @@ int cycleCount=0;    //Telemetry telemetry = new Telemetry();
         };
     }
 
-    public Action downAction() {
+        public Action downAction() {
         return new Action() {
             private boolean initialized = false;
 
@@ -172,6 +184,7 @@ int cycleCount=0;    //Telemetry telemetry = new Telemetry();
             }
         };
     }
+
     public Action powerAction(double power) {
         return new Action() {
             private boolean initialized = false;
@@ -187,8 +200,15 @@ int cycleCount=0;    //Telemetry telemetry = new Telemetry();
             }
         };
     }
+    public Action moveToDownAction() {
+    return moveToPositionAction(ARM_DOWN_POSITION);
+    }
+    public Action moveToUpAction() {
+        return moveToPositionAction(ARM_UP_POSITION);
+    }
 
-    public Action moveToPositionAction(int position) {
+
+        public Action moveToPositionAction(int position) {
         return new Action() {
             int targetPosition = position;
             private boolean initialized = false;
@@ -211,11 +231,11 @@ int cycleCount=0;    //Telemetry telemetry = new Telemetry();
     }
 
     public void down() {
-cycleCount++;
-if(cycleCount>5) {
-   // zeroize(0.1);
-    cycleCount=0;
-}
+        cycleCount++;
+        if (cycleCount > 5) {
+            // zeroize(0.1);
+            cycleCount = 0;
+        }
         armMotor.setTargetPosition(ARM_DOWN_POSITION);
     }
 

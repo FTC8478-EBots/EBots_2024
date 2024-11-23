@@ -50,7 +50,7 @@ public class IntoTheDeepActions {
     public Action armToHang() {
         return new SequentialAction(
                 claw.powerAction(claw.ARM_WEAK_POWER),
-                claw.moveToPositionAction(1500/7 + (6*136)/7)
+                claw.moveToPositionAction(claw.ARM_UP_POSITION/7 + (6*claw.ARM_DOWN_POSITION)/7)
         );
     }
     public Action grabClimber() {
