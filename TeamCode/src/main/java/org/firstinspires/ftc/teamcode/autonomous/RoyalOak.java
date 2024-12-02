@@ -36,7 +36,14 @@ public class RoyalOak extends LinearOpMode {
     public static double BASKET_Y = 12;
     public static double LEFT_PARK_X = -24;
     public static double LEFT_PARK_Y = 24;
-
+    public static double RED_LEFT_START_X = 100;
+    public static double RED_LEFT_START_Y = 100;
+    public static double RED_RIGHT_START_X = 99;
+    public static double RED_RIGHT_START_Y = 99;
+    public static double RED_LEFT_actualSTART_X = 100;
+    public static double RED_LEFT_actualSTART_Y = 100;
+    public static double RED_RIGHT_actualSTART_X = 99;
+    public static double RED_RIGHT_actualSTART_Y = 99;
     /*public Pose2d getInitialPose(int color, int side) {
         if (color == 1) {
             if (side == 1) {
@@ -72,19 +79,19 @@ public class RoyalOak extends LinearOpMode {
         //you go blind... forever :(
         IntoTheDeepActions intoTheDeepActions = new IntoTheDeepActions(drive, lift, claw, hang);
         // vision here that outputs position
-        TrajectoryActionBuilder tabLeft = drive.actionBuilder(initialPose)
+        TrajectoryActionBuilder tabLeft = drive.actionBuilder(new Pose2d(RED_LEFT_START_X,RED_LEFT_START_Y,Math.toRadians(90)))
                 .stopAndAdd(new SequentialAction(claw.closeAction()))
                 .stopAndAdd(new SequentialAction(lift.moveToPositionAction(IntoTheDeep.ElevatorHeight.SpecimenReadyToBeCliped)))
-                .strafeTo(new Vector2d(0, distForward))
+                .strafeTo(new Vector2d(RED_LEFT_START_X, RED_LEFT_START_Y + distForward))
                 .stopAndAdd(new SleepAction(1))
                 .stopAndAdd(new SequentialAction(lift.moveToPositionAction(IntoTheDeep.ElevatorHeight.SpecimenClipedOnHighb)))
                 .stopAndAdd(new SleepAction( 1))
                 .stopAndAdd(new SequentialAction(claw.openAction()))
                 .stopAndAdd(new SleepAction( .25))
-                .strafeTo(new Vector2d(0,distForwardforYellowSamples1))
+                .strafeTo(new Vector2d(RED_LEFT_START_X, RED_LEFT_START_Y+distForwardforYellowSamples1))
 
                 //Grab Block 1
-                .strafeToLinearHeading(new Vector2d(-distLeftforYellowSamples1,distForwardforYellowSamples1),initialPose.heading) //Block 1 (Right most)
+                .strafeToLinearHeading(new Vector2d(-distLeftforYellowSamples1+RED_LEFT_START_X,distForwardforYellowSamples1+RED_LEFT_START_Y),initialPose.heading) //Block 1 (Right most)
                 .stopAndAdd(new SequentialAction(lift.moveToPositionAction(IntoTheDeep.ElevatorHeight.BOTTOM_PLUS)))
                 .stopAndAdd(claw.moveToDownAction())
                 .stopAndAdd(new SleepAction( .5))
@@ -94,7 +101,7 @@ public class RoyalOak extends LinearOpMode {
 
                 //Deposit Block 1
                 .stopAndAdd(new SequentialAction(lift.moveToPositionAction(IntoTheDeep.ElevatorHeight.TOPBASKET)))
-                .strafeToLinearHeading(new Vector2d(BASKET_X,BASKET_Y),Math.toRadians(225))//Basket position
+                .strafeToLinearHeading(new Vector2d(BASKET_X + RED_LEFT_START_X,BASKET_Y + RED_LEFT_START_Y),Math.toRadians(225))//Basket position
                 .stopAndAdd(new SleepAction( .5))
                 .stopAndAdd(new SequentialAction(claw.openAction()))
                 .stopAndAdd(new SleepAction( .5))
@@ -102,22 +109,22 @@ public class RoyalOak extends LinearOpMode {
 
 
                 //Grab Block 2
-                .strafeToLinearHeading(new Vector2d(-distLeftforYellowSamples2,distForwardforYellowSamples2),initialPose.heading) //Block 1 (Right most)
+                .strafeToLinearHeading(new Vector2d(-distLeftforYellowSamples2 + RED_LEFT_START_X,distForwardforYellowSamples2 + RED_LEFT_START_Y),initialPose.heading) //Block 1 (Right most)
                 .stopAndAdd(new SequentialAction(lift.moveToPositionAction(IntoTheDeep.ElevatorHeight.BOTTOM_PLUS)))
                 .stopAndAdd(claw.moveToDownAction())
                 .stopAndAdd(new SleepAction( .5))
                 .stopAndAdd(new SequentialAction(claw.closeAction()))
                 .stopAndAdd(new SleepAction( .5))
                 .stopAndAdd(claw.moveToUpAction())
-
+// Start position = dpad slection
                 //Deposit Block 2
                 .stopAndAdd(new SequentialAction(lift.moveToPositionAction(IntoTheDeep.ElevatorHeight.TOPBASKET)))
-                .strafeToLinearHeading(new Vector2d(BASKET_X,BASKET_Y),Math.toRadians(225))//Basket position
+                .strafeToLinearHeading(new Vector2d(BASKET_X + RED_LEFT_START_X,BASKET_Y + RED_LEFT_START_Y),Math.toRadians(225))//Basket position
                 .stopAndAdd(new SleepAction( .5))
                 .stopAndAdd(new SequentialAction(claw.openAction()))
                 .stopAndAdd(new SleepAction( .5))
 
-                .strafeToLinearHeading(new Vector2d(LEFT_PARK_X,LEFT_PARK_Y),initialPose.heading)//Basket position
+                .strafeToLinearHeading(new Vector2d(LEFT_PARK_X + RED_LEFT_START_X,LEFT_PARK_Y + RED_LEFT_START_Y),initialPose.heading)//Basket position
                 .stopAndAdd(new SequentialAction(lift.moveToPositionAction(IntoTheDeep.ElevatorHeight.BOTTOM_PLUS)))
 
 
@@ -128,25 +135,25 @@ public class RoyalOak extends LinearOpMode {
                 // Jake is a software star and always will be because he is software
         //Coach Joe is a software star.
         ;
-        TrajectoryActionBuilder tabRight= drive.actionBuilder(initialPose)
+        TrajectoryActionBuilder tabRight= drive.actionBuilder(new Pose2d(RED_RIGHT_START_X, RED_RIGHT_START_Y, Math.toRadians(90)))
                 .stopAndAdd(new SequentialAction(claw.closeAction()))
                 .stopAndAdd(new SequentialAction(lift.moveToPositionAction(IntoTheDeep.ElevatorHeight.SpecimenReadyToBeCliped)))
-                .strafeTo(new Vector2d(0, distForward))
+                .strafeTo(new Vector2d(0+RED_RIGHT_START_X, distForward+RED_RIGHT_START_Y))
                 .stopAndAdd(new SleepAction(1))
                 .stopAndAdd(new SequentialAction(lift.moveToPositionAction(IntoTheDeep.ElevatorHeight.SpecimenClipedOnHighb)))
                 .stopAndAdd(new SleepAction( 1))
                 .stopAndAdd(new SequentialAction(claw.openAction()))
-                .strafeTo(new Vector2d(0,0))
-                .strafeTo(new Vector2d(distRight,0))
-                .strafeTo(new Vector2d(distRight,distForwardforSamples))
-                .strafeTo(new Vector2d(32,distForwardforSamples))
-                .strafeTo(new Vector2d(32, 0))
-                .strafeTo(new Vector2d(32,distForwardforSamples))
-                .strafeTo(new Vector2d(41,distForwardforSamples))
-                .strafeTo(new Vector2d(41,0))
+                .strafeTo(new Vector2d(0+RED_RIGHT_START_X,0+RED_RIGHT_START_Y))
+                .strafeTo(new Vector2d(distRight+RED_RIGHT_START_X,0+RED_RIGHT_START_Y))
+                .strafeTo(new Vector2d(distRight+RED_RIGHT_START_X,distForwardforSamples+RED_RIGHT_START_Y))
+                .strafeTo(new Vector2d(32+RED_RIGHT_START_X,distForwardforSamples+RED_RIGHT_START_Y))
+                .strafeTo(new Vector2d(32+RED_RIGHT_START_X, 0+RED_RIGHT_START_Y))
+                .strafeTo(new Vector2d(32+RED_RIGHT_START_X,distForwardforSamples+RED_RIGHT_START_Y))
+                .strafeTo(new Vector2d(41+RED_RIGHT_START_X,distForwardforSamples+RED_RIGHT_START_Y))
+                .strafeTo(new Vector2d(41+RED_RIGHT_START_X,0+RED_RIGHT_START_Y))
                 //.strafeTo(new Vector2d(45,50))
                 //.strafeTo(new Vector2d(54,50))
-                .strafeTo(new Vector2d(distPark,0));//go to parking space
+                .strafeTo(new Vector2d(distPark+RED_RIGHT_START_X,0+RED_RIGHT_START_Y));//go to parking space
                 /*.stopAndAdd(new SequentialAction(lift.moveToPositionAction(IntoTheDeep.ElevatorHeight.SpecimenReadyToBeCliped)))
                 .strafeTo(new Vector2d(-15, distForward))
                 .stopAndAdd(new SleepAction(1))
@@ -176,7 +183,7 @@ public class RoyalOak extends LinearOpMode {
                 )
         );*/
     }
-
+//Jedidiah is a software star
     private int determineAreWeLeft() {
         int currentlyLeft = 0;
         while (!gamepad1.cross && !isStopRequested()) {
