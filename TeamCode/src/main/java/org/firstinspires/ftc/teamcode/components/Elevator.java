@@ -92,7 +92,7 @@ public class Elevator {
         busy = true;
         busyLED.setState(false);
 
-        new Thread(
+       // new Thread(
                 new Runnable() {
                     @Override
                     public void run() {
@@ -113,8 +113,8 @@ public class Elevator {
                         busy = false;
                         //elevatorMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION,new PIDFCoefficients(1,0,0,0));
                     }
-                }
-                ).start();
+                }.run();
+          //      ).start();
 
     }
     int getPosition() {

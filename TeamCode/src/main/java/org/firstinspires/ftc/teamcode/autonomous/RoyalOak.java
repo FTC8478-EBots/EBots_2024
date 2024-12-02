@@ -28,10 +28,10 @@ public class RoyalOak extends LinearOpMode {
     public static double distRight = 24;
     public static double distPark = 48;
     public static double distForwardforSamples = 58;
-    public static double distForwardforYellowSamples1 = 24;
-    public static double distForwardforYellowSamples2 = 24;
+    public static double distForwardforYellowSamples1 = 23.5;
+    public static double distForwardforYellowSamples2 = 23.5;
     public static double distLeftforYellowSamples1 = 37;
-    public static double distLeftforYellowSamples2 = 48;
+    public static double distLeftforYellowSamples2 = 48.5;
     public static double BASKET_X = -48;
     public static double BASKET_Y = 12;
     public static double LEFT_PARK_X = -24;
