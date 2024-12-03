@@ -29,7 +29,7 @@ import androidx.annotation.NonNull;
 public class Claw {
     public static int ARM_DOWN_POSITION = 1250;//-y
     public static int ARM_UP_POSITION = 0; //-x
-    public static int ARM_SPECIMIN_POSITION = 1100;
+    public static int ARM_SPECIMIN_POSITION = 1200;
     public static int ARM_HANG_PREPARE_POSITION = 2225;
     public final double ARM_WEAK_POWER = 0.1;
     public final double ARM_NORMAL_POWER = 1;
@@ -57,6 +57,7 @@ public class Claw {
        // runner = new Executors.newSingleThreadExecutor();
         clawServo = hardwareMap.get(Servo.class, "clawServo");
         clawServo.setDirection(Servo.Direction.FORWARD);
+        close();
         armMotor = hardwareMap.get(DcMotorEx.class, "armMotor");
         armMotor.setDirection(DcMotorEx.Direction.REVERSE);
         busyLED = hardwareMap.get(DigitalChannel.class, "busyLED");
@@ -229,7 +230,19 @@ public class Claw {
     public void up() {
         armMotor.setTargetPosition(ARM_UP_POSITION);
     }
-
+    public void specimen() {
+        armMotor.setTargetPosition(ARM_SPECIMIN_POSITION);
+        //once apon a time there was a rainbow raindeer, it only came out after the rain ended,.
+        // and the sun comes out. Everyone thought it was a optical illusion, until one day it started
+        // eating a farmers crops. Then everyone was in fear of the monster illusion raindeer.
+        //the rainbow rainder was a reinder  that came out when rge rained stoped , the rainbow raindeer ate the farmers crops and he was like heheheha.
+        //then the horrible giant crab came and smashed the series to bits before it was published.
+        //The End.
+        //jokes on you the series used a revive stone and it is back hehehea
+        //tghe raindbow reinder was a reindeer because he was a reinder because he was a reindeer because he was a reindeer.
+        //the end the giant crab came back.
+        //the end...
+    }
     public void down() {
         cycleCount++;
         if (cycleCount > 5) {

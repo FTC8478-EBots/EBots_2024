@@ -90,20 +90,18 @@ public class TestTeleop extends LinearOpMode {
                 claw.up();
 
             }
-            if (gamepad1.square) {
-                if (this.time-startTime>100) {
+            if (gamepad1.triangle) {
+                if (this.time-startTime>1) {
                     drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0, 0), 0));
-                    Actions.runBlocking(intoTheDeepActions.grabClimber());
+                    Actions.runBlocking(elevator.moveToPositionAction(IntoTheDeep.ElevatorHeight.HangHigh));
+                    Actions.runBlocking(claw.moveToPositionAction(IntoTheDeep.ArmAngles.Hang));
                 }
                 else
                     telemetry.addLine("ERROR NOT ENDGAME");
             }
             if (gamepad1.cross) {
-                if (this.time-startTime>100) {
-                    Actions.runBlocking(elevator.moveToPositionAction(IntoTheDeep.ElevatorHeight.LOW_BAR));
-                    hangMotor.retract();
-                    Actions.runBlocking(claw.moveToUpAction());
-                    elevator.moveToPosition(0);
+                if (this.time-startTime>1) {
+                    Actions.runBlocking(elevator.moveToPositionAction(IntoTheDeep.ElevatorHeight.HangLow));
 
                 }
                 else
@@ -145,6 +143,9 @@ public class TestTeleop extends LinearOpMode {
                 Actions.runBlocking(
                         intoTheDeepActions.getHighSpecimenScoringAction()
                 );
+            }
+            if (gamepad2.square) {
+                claw.specimen();
             }
 
             // else {

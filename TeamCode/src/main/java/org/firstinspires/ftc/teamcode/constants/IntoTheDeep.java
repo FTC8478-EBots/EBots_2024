@@ -8,15 +8,18 @@ public class IntoTheDeep {
     public static int BOTTOM = 5;
     public static int BOTTOM_PLUS = 10;
     public static int LOW_BAR = 300;
-   public static int LOWERBASKET = 1516;
+   public static int LOWERBASKET = 1250;
    public static int TOPBASKET = 3608;
    public static int SpecimenClipedOnHighb = 674;   //674 is right  654 for 8478
    public static int SpecimenReadyToBeCliped = 1250;
    public static int GrabBracket = 1100;
+   public static int HangHigh = 4259;
+   public static int HangLow =  3188;
         }
         @Config
         public static class ArmAngles{
             public static int GrabBracket = 2250;
+            public static int Hang = 700;
 
         }
     }

@@ -32,18 +32,31 @@ public class RoyalOak extends LinearOpMode {
     public static double distForwardforYellowSamples2 = 23.5;
     public static double distLeftforYellowSamples1 = 37;
     public static double distLeftforYellowSamples2 = 48.5;
-    public static double BASKET_X = -48;
-    public static double BASKET_Y = 12;
+
+    public static double YELLOW_SAMPLE_1_X = -49.5;
+    public static double YELLOW_SAMPLE_2_X = -59.5;
+    public static double YELLOW_SAMPLE_3_X = -53;
+
+    public static double YELLOW_SAMPLE_1_Y = -45.5;
+    public static double YELLOW_SAMPLE_2_Y = -45.5;
+    public static double YELLOW_SAMPLE_3_Y = -26;
+    public static double YELLOW_SAMPLE_3_HEADING = Math.toRadians(180);
+
+
+    public static double BASKET_X = -60;
+    public static double BASKET_Y = -60;
     public static double LEFT_PARK_X = -24;
-    public static double LEFT_PARK_Y = 24;
-    public static double RED_LEFT_START_X = 100;
-    public static double RED_LEFT_START_Y = 100;
+    public static double LEFT_PARK_Y = 0;
+    public static double RED_LEFT_START_X = -39.5;
+    public static double RED_LEFT_START_Y = -63.25;
+   public static double RED_LEFT_START_HEADING =  Math.toRadians(180);
     public static double RED_RIGHT_START_X = 99;
     public static double RED_RIGHT_START_Y = 99;
     public static double RED_LEFT_actualSTART_X = 100;
     public static double RED_LEFT_actualSTART_Y = 100;
     public static double RED_RIGHT_actualSTART_X = 99;
     public static double RED_RIGHT_actualSTART_Y = 99;
+    public static double RED_RIGHT_START_HEADING = Math.toRadians(90);
     /*public Pose2d getInitialPose(int color, int side) {
         if (color == 1) {
             if (side == 1) {
@@ -74,24 +87,24 @@ public class RoyalOak extends LinearOpMode {
         left = determineAreWeLeft();
         //Pose2d positionBeforeSample = new Pose2d(8, -34, Math.toRadians(90));
         //Jedidiah is really good at coding and is a coding star.
-//you are in a dark room, what will you do?
-        //i turn the lights on :)
-        //you go blind... forever :(
+//You are in a dark room, what will you do?
+        //I will turn the lights on :)
+        //Vincent is a coding star.
+        //You go blind... forever dun dun dunnnnnn :(
+        //Vincent is amazing at coding. [:
         IntoTheDeepActions intoTheDeepActions = new IntoTheDeepActions(drive, lift, claw, hang);
         // vision here that outputs position
-        TrajectoryActionBuilder tabLeft = drive.actionBuilder(new Pose2d(RED_LEFT_START_X,RED_LEFT_START_Y,Math.toRadians(90)))
-                .stopAndAdd(new SequentialAction(claw.closeAction()))
-                .stopAndAdd(new SequentialAction(lift.moveToPositionAction(IntoTheDeep.ElevatorHeight.SpecimenReadyToBeCliped)))
-                .strafeTo(new Vector2d(RED_LEFT_START_X, RED_LEFT_START_Y + distForward))
-                .stopAndAdd(new SleepAction(1))
-                .stopAndAdd(new SequentialAction(lift.moveToPositionAction(IntoTheDeep.ElevatorHeight.SpecimenClipedOnHighb)))
-                .stopAndAdd(new SleepAction( 1))
+        TrajectoryActionBuilder tabLeft = drive.actionBuilder(new Pose2d(RED_LEFT_START_X,RED_LEFT_START_Y,RED_LEFT_START_HEADING))
+
+                //Deposit Block 1
+                .stopAndAdd(new SequentialAction(lift.moveToPositionAction(IntoTheDeep.ElevatorHeight.TOPBASKET)))
+                .strafeToLinearHeading(new Vector2d(BASKET_X  ,BASKET_Y ),Math.toRadians(225))//Basket position
+                .stopAndAdd(new SleepAction( .5))
                 .stopAndAdd(new SequentialAction(claw.openAction()))
-                .stopAndAdd(new SleepAction( .25))
-                .strafeTo(new Vector2d(RED_LEFT_START_X, RED_LEFT_START_Y+distForwardforYellowSamples1))
+                .stopAndAdd(new SleepAction( .5))
 
                 //Grab Block 1
-                .strafeToLinearHeading(new Vector2d(-distLeftforYellowSamples1+RED_LEFT_START_X,distForwardforYellowSamples1+RED_LEFT_START_Y),initialPose.heading) //Block 1 (Right most)
+                .strafeToLinearHeading(new Vector2d(YELLOW_SAMPLE_1_X,YELLOW_SAMPLE_1_Y),Math.toRadians(90)) //Block 1 (Right most)
                 .stopAndAdd(new SequentialAction(lift.moveToPositionAction(IntoTheDeep.ElevatorHeight.BOTTOM_PLUS)))
                 .stopAndAdd(claw.moveToDownAction())
                 .stopAndAdd(new SleepAction( .5))
@@ -101,7 +114,7 @@ public class RoyalOak extends LinearOpMode {
 
                 //Deposit Block 1
                 .stopAndAdd(new SequentialAction(lift.moveToPositionAction(IntoTheDeep.ElevatorHeight.TOPBASKET)))
-                .strafeToLinearHeading(new Vector2d(BASKET_X + RED_LEFT_START_X,BASKET_Y + RED_LEFT_START_Y),Math.toRadians(225))//Basket position
+                .strafeToLinearHeading(new Vector2d(BASKET_X,BASKET_Y),Math.toRadians(225))//Basket position
                 .stopAndAdd(new SleepAction( .5))
                 .stopAndAdd(new SequentialAction(claw.openAction()))
                 .stopAndAdd(new SleepAction( .5))
@@ -109,7 +122,7 @@ public class RoyalOak extends LinearOpMode {
 
 
                 //Grab Block 2
-                .strafeToLinearHeading(new Vector2d(-distLeftforYellowSamples2 + RED_LEFT_START_X,distForwardforYellowSamples2 + RED_LEFT_START_Y),initialPose.heading) //Block 1 (Right most)
+                .strafeToLinearHeading(new Vector2d(YELLOW_SAMPLE_2_X,YELLOW_SAMPLE_2_Y ),initialPose.heading) //Block 1 (Right most)
                 .stopAndAdd(new SequentialAction(lift.moveToPositionAction(IntoTheDeep.ElevatorHeight.BOTTOM_PLUS)))
                 .stopAndAdd(claw.moveToDownAction())
                 .stopAndAdd(new SleepAction( .5))
@@ -119,12 +132,28 @@ public class RoyalOak extends LinearOpMode {
 // Start position = dpad slection
                 //Deposit Block 2
                 .stopAndAdd(new SequentialAction(lift.moveToPositionAction(IntoTheDeep.ElevatorHeight.TOPBASKET)))
-                .strafeToLinearHeading(new Vector2d(BASKET_X + RED_LEFT_START_X,BASKET_Y + RED_LEFT_START_Y),Math.toRadians(225))//Basket position
+                .strafeToLinearHeading(new Vector2d(BASKET_X ,BASKET_Y),Math.toRadians(225))//Basket position
                 .stopAndAdd(new SleepAction( .5))
                 .stopAndAdd(new SequentialAction(claw.openAction()))
                 .stopAndAdd(new SleepAction( .5))
 
-                .strafeToLinearHeading(new Vector2d(LEFT_PARK_X + RED_LEFT_START_X,LEFT_PARK_Y + RED_LEFT_START_Y),initialPose.heading)//Basket position
+                //Grab Block 3
+                .strafeToLinearHeading(new Vector2d(YELLOW_SAMPLE_3_X,YELLOW_SAMPLE_3_Y ),YELLOW_SAMPLE_3_HEADING) //Block 1 (Right most)
+                .stopAndAdd(new SequentialAction(lift.moveToPositionAction(IntoTheDeep.ElevatorHeight.BOTTOM_PLUS)))
+                .stopAndAdd(claw.moveToDownAction())
+                .stopAndAdd(new SleepAction( .5))
+                .stopAndAdd(new SequentialAction(claw.closeAction()))
+                .stopAndAdd(new SleepAction( .5))
+                .stopAndAdd(claw.moveToUpAction())
+// Start position = dpad slection
+                //Deposit Block 2
+                .stopAndAdd(new SequentialAction(lift.moveToPositionAction(IntoTheDeep.ElevatorHeight.TOPBASKET)))
+                .strafeToLinearHeading(new Vector2d(BASKET_X ,BASKET_Y),Math.toRadians(225))//Basket position
+                .stopAndAdd(new SleepAction( .5))
+                .stopAndAdd(new SequentialAction(claw.openAction()))
+                .stopAndAdd(new SleepAction( .5))
+
+                .strafeToLinearHeading(new Vector2d(LEFT_PARK_X,LEFT_PARK_Y),initialPose.heading)//Basket position
                 .stopAndAdd(new SequentialAction(lift.moveToPositionAction(IntoTheDeep.ElevatorHeight.BOTTOM_PLUS)))
 
 
@@ -163,15 +192,18 @@ public class RoyalOak extends LinearOpMode {
                 .strafeTo(new Vector2d(12, -60))*/
                 //.strafeTo(new Vector2d(78, -60));
 
+
+        Action trajectoryActionChosen;
+        if (left == 1){
+            drive.pose = new Pose2d(RED_LEFT_START_X,RED_LEFT_START_Y,RED_LEFT_START_HEADING);
+            trajectoryActionChosen = tabLeft.build();
+        } else{
+            drive.pose = new Pose2d(RED_RIGHT_START_X,RED_RIGHT_START_Y,RED_RIGHT_START_HEADING);
+            trajectoryActionChosen = tabRight.build();
+        }
         waitForStart();
 
         if (isStopRequested()) return;
-        Action trajectoryActionChosen;
-        if (left == 1){
-            trajectoryActionChosen = tabLeft.build();
-        } else{
-            trajectoryActionChosen = tabRight.build();
-        }
         Actions.runBlocking(trajectoryActionChosen);
 
         /*Actions.runBlocking(
