@@ -34,13 +34,13 @@ public class RoyalOak extends LinearOpMode {
     public static double distLeftforYellowSamples1 = 37;
     public static double distLeftforYellowSamples2 = 48.5;
 
-    public static double YELLOW_SAMPLE_1_X = -53;
-    public static double YELLOW_SAMPLE_2_X = -65.5;
-    public static double YELLOW_SAMPLE_3_X = -53;
+    public static double YELLOW_SAMPLE_1_X = -55;
+    public static double YELLOW_SAMPLE_2_X = -69;
+    public static double YELLOW_SAMPLE_3_X = -55;
 
-    public static double YELLOW_SAMPLE_1_Y = -44.5;
-    public static double YELLOW_SAMPLE_2_Y = -45.75;
-    public static double YELLOW_SAMPLE_3_Y = -26.0;
+    public static double YELLOW_SAMPLE_1_Y = -45.5;
+    public static double YELLOW_SAMPLE_2_Y = -49;
+    public static double YELLOW_SAMPLE_3_Y = -29.0;
     public static double YELLOW_SAMPLE_1_DELAY = 1.0;
     public static double YELLOW_SAMPLE_2_DELAY = 1.0;
     public static double YELLOW_SAMPLE_3_DELAY = 1.0;
