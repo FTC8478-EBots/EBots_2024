@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.autonomous;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
@@ -33,20 +34,42 @@ public class RoyalOak extends LinearOpMode {
     public static double distLeftforYellowSamples1 = 37;
     public static double distLeftforYellowSamples2 = 48.5;
 
-    public static double YELLOW_SAMPLE_1_X = -49.5;
-    public static double YELLOW_SAMPLE_2_X = -59.5;
+    public static double YELLOW_SAMPLE_1_X = -53;
+    public static double YELLOW_SAMPLE_2_X = -65.5;
     public static double YELLOW_SAMPLE_3_X = -53;
 
-    public static double YELLOW_SAMPLE_1_Y = -45.5;
-    public static double YELLOW_SAMPLE_2_Y = -45.5;
-    public static double YELLOW_SAMPLE_3_Y = -26;
+    public static double YELLOW_SAMPLE_1_Y = -44.5;
+    public static double YELLOW_SAMPLE_2_Y = -45.75;
+    public static double YELLOW_SAMPLE_3_Y = -26.0;
+    public static double YELLOW_SAMPLE_1_DELAY = 1.0;
+    public static double YELLOW_SAMPLE_2_DELAY = 1.0;
+    public static double YELLOW_SAMPLE_3_DELAY = 1.0;
+
+    public static double LIFT_0_DELAY =1;
+    public static double LIFT_1_DELAY =1;
+    public static double LIFT_2_DELAY =1;
+    public static double LIFT_3_DELAY =1;
+    public static double LIFT_4_DELAY =1;
+
+
+    public static double DROP_0_DELAY =1;
+    public static double DROP_1_DELAY =1;
+    public static double DROP_2_DELAY =1;
+    public static double DROP_3_DELAY =1;
+    public static double DROP_4_DELAY =1;
+
     public static double YELLOW_SAMPLE_3_HEADING = Math.toRadians(180);
 
-
+    public static double RED_BLOCK_3_X = 36;
+    public static double RED_BLOCK_3_Y = 38;
     public static double BASKET_X = -60;
+    public static double BASKET_2_X = -62;
+    public static double BASKET_3_X = -62;
     public static double BASKET_Y = -60;
-    public static double LEFT_PARK_X = -24;
-    public static double LEFT_PARK_Y = 0;
+    public static double BASKET_2_Y = -63;
+    public static double BASKET_3_Y = -64;
+    public static double LEFT_PARK_X = -52;
+    public static double LEFT_PARK_Y = -52;
     public static double RED_LEFT_START_X = -39.5;
     public static double RED_LEFT_START_Y = -63.25;
    public static double RED_LEFT_START_HEADING =  Math.toRadians(180);
@@ -94,87 +117,92 @@ public class RoyalOak extends LinearOpMode {
         //Vincent is amazing at coding. [:
         IntoTheDeepActions intoTheDeepActions = new IntoTheDeepActions(drive, lift, claw, hang);
         // vision here that outputs position
+
         TrajectoryActionBuilder tabLeft = drive.actionBuilder(new Pose2d(RED_LEFT_START_X,RED_LEFT_START_Y,RED_LEFT_START_HEADING))
 
-                //Deposit Block 1
-                .stopAndAdd(new SequentialAction(lift.moveToPositionAction(IntoTheDeep.ElevatorHeight.TOPBASKET)))
+                //Deposit Block 0
+                .stopAndAdd(lift.moveToPositionActionDontWait(IntoTheDeep.ElevatorHeight.TOPBASKET))
+                .waitSeconds(LIFT_0_DELAY)
                 .strafeToLinearHeading(new Vector2d(BASKET_X  ,BASKET_Y ),Math.toRadians(225))//Basket position
-                .stopAndAdd(new SleepAction( .5))
-                .stopAndAdd(new SequentialAction(claw.openAction()))
-                .stopAndAdd(new SleepAction( .5))
+                //.waitSeconds(.5)
+                .stopAndAdd(claw.openAction())
+                .waitSeconds( .5)
 
                 //Grab Block 1
+                .afterTime(.5, new ParallelAction(lift.moveToPositionActionDontWait(IntoTheDeep.ElevatorHeight.BOTTOM_PLUS),
+                                claw.moveToDownAction()))
+
                 .strafeToLinearHeading(new Vector2d(YELLOW_SAMPLE_1_X,YELLOW_SAMPLE_1_Y),Math.toRadians(90)) //Block 1 (Right most)
-                .stopAndAdd(new SequentialAction(lift.moveToPositionAction(IntoTheDeep.ElevatorHeight.BOTTOM_PLUS)))
-                .stopAndAdd(claw.moveToDownAction())
-                .stopAndAdd(new SleepAction( .5))
+
+                .waitSeconds(DROP_1_DELAY)
+
+                // .stopAndAdd(new SleepAction( 5))//Could we change this to 1?
                 .stopAndAdd(new SequentialAction(claw.closeAction()))
-                .stopAndAdd(new SleepAction( .5))
-                .stopAndAdd(claw.moveToUpAction())
+                .waitSeconds(.4)
+                .stopAndAdd(new ParallelAction(claw.moveToUpAction(),
 
                 //Deposit Block 1
-                .stopAndAdd(new SequentialAction(lift.moveToPositionAction(IntoTheDeep.ElevatorHeight.TOPBASKET)))
+                lift.moveToPositionAction(IntoTheDeep.ElevatorHeight.TOPBASKET)))
                 .strafeToLinearHeading(new Vector2d(BASKET_X,BASKET_Y),Math.toRadians(225))//Basket position
-                .stopAndAdd(new SleepAction( .5))
+                .waitSeconds(.25)
                 .stopAndAdd(new SequentialAction(claw.openAction()))
-                .stopAndAdd(new SleepAction( .5))
+                .waitSeconds(.5)
 
 
 
                 //Grab Block 2
-                .strafeToLinearHeading(new Vector2d(YELLOW_SAMPLE_2_X,YELLOW_SAMPLE_2_Y ),initialPose.heading) //Block 1 (Right most)
-                .stopAndAdd(new SequentialAction(lift.moveToPositionAction(IntoTheDeep.ElevatorHeight.BOTTOM_PLUS)))
-                .stopAndAdd(claw.moveToDownAction())
-                .stopAndAdd(new SleepAction( .5))
+                //.afterTime(.5, new ParallelAction(lift.moveToPositionActionDontWait(IntoTheDeep.ElevatorHeight.BOTTOM_PLUS),
+                //        claw.moveToDownAction()))
+
+                        .strafeToLinearHeading(new Vector2d(YELLOW_SAMPLE_2_X,YELLOW_SAMPLE_2_Y ),initialPose.heading) //Block 1 (Right most)
+                .stopAndAdd( new ParallelAction(lift.moveToPositionAction(IntoTheDeep.ElevatorHeight.BOTTOM_PLUS),
+                        claw.moveToDownAction()))
+//                .stopAndAdd(new SequentialAction(lift.moveToPositionAction(IntoTheDeep.ElevatorHeight.BOTTOM_PLUS)))
+  //              .stopAndAdd(claw.moveToDownAction())
+                .waitSeconds(.5)
                 .stopAndAdd(new SequentialAction(claw.closeAction()))
-                .stopAndAdd(new SleepAction( .5))
-                .stopAndAdd(claw.moveToUpAction())
+                .waitSeconds(.4)
+                .stopAndAdd(new ParallelAction(claw.moveToUpAction(), lift.moveToPositionActionDontWait(IntoTheDeep.ElevatorHeight.TOPBASKET)))
+
 // Start position = dpad slection
                 //Deposit Block 2
-                .stopAndAdd(new SequentialAction(lift.moveToPositionAction(IntoTheDeep.ElevatorHeight.TOPBASKET)))
-                .strafeToLinearHeading(new Vector2d(BASKET_X ,BASKET_Y),Math.toRadians(225))//Basket position
-                .stopAndAdd(new SleepAction( .5))
+                .strafeToLinearHeading(new Vector2d(BASKET_2_X ,BASKET_2_Y),Math.toRadians(225))//Basket position
+                .waitSeconds(.5)
                 .stopAndAdd(new SequentialAction(claw.openAction()))
-                .stopAndAdd(new SleepAction( .5))
+                .waitSeconds(.5)
 
                 //Grab Block 3
+                .afterTime(.5, new ParallelAction(lift.moveToPositionActionDontWait(IntoTheDeep.ElevatorHeight.BOTTOM_PLUS),
+                        claw.moveToDownAction()))
                 .strafeToLinearHeading(new Vector2d(YELLOW_SAMPLE_3_X,YELLOW_SAMPLE_3_Y ),YELLOW_SAMPLE_3_HEADING) //Block 1 (Right most)
-                .stopAndAdd(new SequentialAction(lift.moveToPositionAction(IntoTheDeep.ElevatorHeight.BOTTOM_PLUS)))
-                .stopAndAdd(claw.moveToDownAction())
-                .stopAndAdd(new SleepAction( .5))
+
+               // .waitSeconds(.25)
                 .stopAndAdd(new SequentialAction(claw.closeAction()))
-                .stopAndAdd(new SleepAction( .5))
-                .stopAndAdd(claw.moveToUpAction())
+                .waitSeconds(.4)
+                .stopAndAdd(new ParallelAction(claw.moveToUpAction(), lift.moveToPositionAction(IntoTheDeep.ElevatorHeight.TOPBASKET)))
 // Start position = dpad slection
-                //Deposit Block 2
-                .stopAndAdd(new SequentialAction(lift.moveToPositionAction(IntoTheDeep.ElevatorHeight.TOPBASKET)))
-                .strafeToLinearHeading(new Vector2d(BASKET_X ,BASKET_Y),Math.toRadians(225))//Basket position
-                .stopAndAdd(new SleepAction( .5))
+                //Deposit Block 3
+                .strafeToLinearHeading(new Vector2d(BASKET_3_X ,BASKET_3_Y),Math.toRadians(225))//Basket position
+                .waitSeconds(.5)
                 .stopAndAdd(new SequentialAction(claw.openAction()))
-                .stopAndAdd(new SleepAction( .5))
+                .waitSeconds(.5)
 
                 .strafeToLinearHeading(new Vector2d(LEFT_PARK_X,LEFT_PARK_Y),initialPose.heading)//Basket position
                 .stopAndAdd(new SequentialAction(lift.moveToPositionAction(IntoTheDeep.ElevatorHeight.BOTTOM_PLUS)))
-
-
-
-
                 ;
-                //isaac is a software star and will always be :D
-                // Jake is a software star and always will be because he is software
-        //Coach Joe is a software star.
-        ;
+
         TrajectoryActionBuilder tabRight= drive.actionBuilder(new Pose2d(RED_RIGHT_START_X, RED_RIGHT_START_Y, Math.toRadians(90)))
                 .stopAndAdd(new SequentialAction(claw.closeAction()))
                 .stopAndAdd(new SequentialAction(lift.moveToPositionAction(IntoTheDeep.ElevatorHeight.SpecimenReadyToBeCliped)))
                 .strafeTo(new Vector2d(0+RED_RIGHT_START_X, distForward+RED_RIGHT_START_Y))
-                .stopAndAdd(new SleepAction(1))
+                .waitSeconds(1)
                 .stopAndAdd(new SequentialAction(lift.moveToPositionAction(IntoTheDeep.ElevatorHeight.SpecimenClipedOnHighb)))
-                .stopAndAdd(new SleepAction( 1))
+                .waitSeconds(1)
                 .stopAndAdd(new SequentialAction(claw.openAction()))
-                .strafeTo(new Vector2d(0+RED_RIGHT_START_X,0+RED_RIGHT_START_Y))
-                .strafeTo(new Vector2d(distRight+RED_RIGHT_START_X,0+RED_RIGHT_START_Y))
+                .strafeTo(new Vector2d(0+RED_RIGHT_START_X,20+RED_RIGHT_START_Y))
+                .strafeTo(new Vector2d(distRight+RED_RIGHT_START_X,20+RED_RIGHT_START_Y))
                 .strafeTo(new Vector2d(distRight+RED_RIGHT_START_X,distForwardforSamples+RED_RIGHT_START_Y))
+                .stopAndAdd(new SequentialAction(lift.moveToPositionActionDontWait(IntoTheDeep.ElevatorHeight.BOTTOM_PLUS)))
                 .strafeTo(new Vector2d(32+RED_RIGHT_START_X,distForwardforSamples+RED_RIGHT_START_Y))
                 .strafeTo(new Vector2d(32+RED_RIGHT_START_X, 0+RED_RIGHT_START_Y))
                 .strafeTo(new Vector2d(32+RED_RIGHT_START_X,distForwardforSamples+RED_RIGHT_START_Y))
@@ -182,10 +210,20 @@ public class RoyalOak extends LinearOpMode {
                 .strafeTo(new Vector2d(41+RED_RIGHT_START_X,0+RED_RIGHT_START_Y))
                 //.strafeTo(new Vector2d(45,50))
                 //.strafeTo(new Vector2d(54,50))
-                .strafeTo(new Vector2d(distPark+RED_RIGHT_START_X,0+RED_RIGHT_START_Y));//go to parking space
+                .strafeToLinearHeading(new Vector2d(RED_RIGHT_START_X+RED_BLOCK_3_X,RED_RIGHT_START_Y+RED_BLOCK_3_Y),0)
+                .stopAndAdd(claw.moveToDownAction())
+                // .waitSeconds(.25)
+                .stopAndAdd(new SequentialAction(claw.closeAction()))
+                .waitSeconds(.4)
+                .stopAndAdd((claw.moveToUpAction()))
+                .strafeToLinearHeading(new Vector2d(distPark+RED_RIGHT_START_X,4+RED_RIGHT_START_Y),Math.toRadians(-90))//go to parking space
+                .stopAndAdd(claw.openAction())
+                .waitSeconds(0.4)
+                .turn(Math.toRadians(-180/*+360*/))
+                ;
                 /*.stopAndAdd(new SequentialAction(lift.moveToPositionAction(IntoTheDeep.ElevatorHeight.SpecimenReadyToBeCliped)))
                 .strafeTo(new Vector2d(-15, distForward))
-                .stopAndAdd(new SleepAction(1))
+                .waitSeconds(1)
                 .stopAndAdd(new SequentialAction(lift.moveToPositionAction(IntoTheDeep.ElevatorHeight.SpecimenClipedOnHighb)))
                 .stopAndAdd(new SequentialAction(claw.openAction()))
 
@@ -216,6 +254,7 @@ public class RoyalOak extends LinearOpMode {
         );*/
     }
 //Jedidiah is a software star
+    //Carlson is a software star
     private int determineAreWeLeft() {
         int currentlyLeft = 0;
         while (!gamepad1.cross && !isStopRequested()) {

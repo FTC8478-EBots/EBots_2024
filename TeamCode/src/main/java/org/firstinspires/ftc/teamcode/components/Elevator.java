@@ -190,6 +190,26 @@ public class Elevator {
 
     }
 
+    public Action moveToPositionActionDontWait (int position){return new Action() {
+        int targetPosition = position;
+        int cycles = 0;
+        private boolean initialized = false;
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            if  (!initialized) {
+                elevatorMotor.setTargetPosition(targetPosition);
+                initialized = true;
+            }
+            cycles++;
+            telemetryPacket.put("elevatorTarget", targetPosition);
+            telemetryPacket.put("elevatorCycles",cycles);
+            return false;//!((Math.abs(elevatorMotor.getCurrentPosition()-targetPosition)< 4 * elevatorMotor.getTargetPositionTolerance()));
+
+        }
+    };
+
+    }
+
 
        public double getDriveSpeedScaling(){
 
