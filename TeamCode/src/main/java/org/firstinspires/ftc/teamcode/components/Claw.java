@@ -201,6 +201,9 @@ public class Claw {
             }
         };
     }
+    public Action moveToDownActionHorizontal() {
+        return moveToPositionAction(ARM_DOWN_POSITION+20);
+    }
     public Action moveToDownAction() {
     return moveToPositionAction(ARM_DOWN_POSITION);
     }

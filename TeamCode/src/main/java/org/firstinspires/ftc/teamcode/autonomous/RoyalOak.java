@@ -36,7 +36,7 @@ public class RoyalOak extends LinearOpMode {
 
     public static double YELLOW_SAMPLE_1_X = -55;
     public static double YELLOW_SAMPLE_2_X = -69;
-    public static double YELLOW_SAMPLE_3_X = -55;
+    public static double YELLOW_SAMPLE_3_X = -55.5;
 
     public static double YELLOW_SAMPLE_1_Y = -45.5;
     public static double YELLOW_SAMPLE_2_Y = -49;
@@ -173,12 +173,12 @@ public class RoyalOak extends LinearOpMode {
 
                 //Grab Block 3
                 .afterTime(.5, new ParallelAction(lift.moveToPositionActionDontWait(IntoTheDeep.ElevatorHeight.BOTTOM_PLUS),
-                        claw.moveToDownAction()))
+                        claw.moveToDownActionHorizontal()))
                 .strafeToLinearHeading(new Vector2d(YELLOW_SAMPLE_3_X,YELLOW_SAMPLE_3_Y ),YELLOW_SAMPLE_3_HEADING) //Block 1 (Right most)
 
-               // .waitSeconds(.25)
+                .waitSeconds(.5)
                 .stopAndAdd(new SequentialAction(claw.closeAction()))
-                .waitSeconds(.4)
+                .waitSeconds(.5)
                 .stopAndAdd(new ParallelAction(claw.moveToUpAction(), lift.moveToPositionAction(IntoTheDeep.ElevatorHeight.TOPBASKET)))
 // Start position = dpad slection
                 //Deposit Block 3
